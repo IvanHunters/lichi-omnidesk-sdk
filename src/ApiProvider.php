@@ -15,27 +15,20 @@ use RuntimeException;
 class ApiProvider
 {
     private Client $client;
-    protected string $email = "";
-    protected string $token = "";
 
     /**
      * ApiProvider constructor.
      * @param Client $client
-     * @param string $email
-     * @param string $token
      */
-    public function __construct(Client $client, string $email, string $token)
+    public function __construct(Client $client)
     {
         $this->client = $client;
-        $this->email = $email;
-        $this->token = $token;
     }
 
     /**
      * @param string $typeRequest
      * @param string $method
      * @param array $params
-     * @param bool $useToken
      * @return mixed
      */
     public function callMethod(string $typeRequest, string $method, array $params = [])

@@ -12,7 +12,7 @@ $client = new Client([
     'auth' => [getenv('API_EMAIL'), getenv('API_KEY')],
 ]);
 
-$apiProvider = new ApiProvider($client, getenv('API_EMAIL'), getenv('API_KEY'));
+$apiProvider = new ApiProvider($client);
 
 $cases = $apiProvider->cases()->get([
     'from_time' => '2022-07-22'
