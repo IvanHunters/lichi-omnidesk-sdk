@@ -1,0 +1,33 @@
+{
+  "name": "lichi/omnidesk-sdk",
+  "type": "library",
+  "description": "PHP SDK for OMNIDESK",
+  "keywords": ["Lichi","lichi", "omnidesk php sdk", "omnidesk", "omnidesk api", "omnidesk sdk"],
+  "homepage": "https://github.com/IvanHunters/lichi-omnidesk-sdk",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ivan Okhotnikov",
+      "email": "ohotnikovivan@yandex.ru"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "guzzlehttp/guzzle": "~6",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Lichi\\Omnidesk\\": "src/",
+      "Lichi\\Omnidesk\\Sdk\\": "src/sdk/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  }
+}
