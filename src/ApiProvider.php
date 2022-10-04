@@ -10,6 +10,7 @@ use Lichi\Omnidesk\Sdk\Cases;
 use Lichi\Omnidesk\Sdk\CustomFields;
 use Lichi\Omnidesk\Sdk\Employees;
 use Lichi\Omnidesk\Sdk\Groups;
+use Lichi\Omnidesk\Sdk\Users;
 use RuntimeException;
 
 class ApiProvider
@@ -92,6 +93,11 @@ class ApiProvider
     public function customFields(){
         $self = clone $this;
         return new CustomFields($self);
+    }
+
+    public function users(){
+        $self = clone $this;
+        return new Users($self);
     }
 
 }
