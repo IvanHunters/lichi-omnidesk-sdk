@@ -42,17 +42,15 @@ class ApiProvider
                 $response = $exception->getResponse()->getBody(true);
             } catch (\Throwable $e) {
                 throw new RuntimeException(sprintf(
-                    "API ERROR, Method: %s\Token: %s\nParams: %s",
+                    "API ERROR, Method: %s\nParams: %s",
                     $method,
-                    $this->token,
                     json_encode($params, JSON_UNESCAPED_UNICODE)
                 ));
             }
 
             throw new RuntimeException(sprintf(
-                "API ERROR, Method: %s\Token: %s\nParams: %s\nResponse: %s",
+                "API ERROR, Method: %s\nParams: %s\nResponse: %s",
                 $method,
-                $this->token,
                 json_encode($params, JSON_UNESCAPED_UNICODE),
                 $response,
             ));
