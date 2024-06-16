@@ -34,7 +34,7 @@ class ApiProvider
      */
     public function callMethod(string $typeRequest, string $method, array $params = [])
     {
-        usleep(380000);
+        sleep(1);
         try {
             $response = $this->client->request($typeRequest, $method, $params);
         } catch (GuzzleException $exception){
