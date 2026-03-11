@@ -37,23 +37,29 @@ class ApiProvider
         sleep(1);
         try {
             $response = $this->client->request($typeRequest, $method, $params);
-        } catch (GuzzleException $exception){
+        } catch (GuzzleException $exception) {
+            $statusCode = 'N/A';
+            $responseBody = 'N/A';
+
             try {
-                $response = $exception->getResponse()->getBody(true);
+                $guzzleResponse = $exception->getResponse();
+                if ($guzzleResponse !== null) {
+                    $statusCode = $guzzleResponse->getStatusCode();
+                    $responseBody = (string) $guzzleResponse->getBody();
+                }
             } catch (\Throwable $e) {
-                throw new RuntimeException(sprintf(
-                    "API ERROR, Method: %s\nParams: %s",
-                    $method,
-                    json_encode($params, JSON_UNESCAPED_UNICODE)
-                ));
+                // Response unavailable
             }
 
             throw new RuntimeException(sprintf(
-                "API ERROR, Method: %s\nParams: %s\nResponse: %s",
+                "API ERROR, Method: %s %s\nHTTP Status: %s\nParams: %s\nResponse: %s\nException: %s",
+                $typeRequest,
                 $method,
+                $statusCode,
                 json_encode($params, JSON_UNESCAPED_UNICODE),
-                $response,
-            ));
+                $responseBody,
+                $exception->getMessage()
+            ), (int) $exception->getCode(), $exception);
         }
 
         if ($response->getStatusCode() != 200) {
