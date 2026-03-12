@@ -15,6 +15,9 @@ use RuntimeException;
 
 class ApiProvider
 {
+    private const MAX_RETRIES = 3;
+    private const RETRY_DELAY_SECONDS = 5;
+
     private Client $client;
 
     /**
@@ -34,32 +37,45 @@ class ApiProvider
      */
     public function callMethod(string $typeRequest, string $method, array $params = [])
     {
-        sleep(1);
-        try {
-            $response = $this->client->request($typeRequest, $method, $params);
-        } catch (GuzzleException $exception) {
-            $statusCode = 'N/A';
-            $responseBody = 'N/A';
+        $lastException = null;
+
+        for ($attempt = 1; $attempt <= self::MAX_RETRIES; $attempt++) {
+            sleep($attempt === 1 ? 1 : self::RETRY_DELAY_SECONDS * $attempt);
 
             try {
-                $guzzleResponse = $exception->getResponse();
-                if ($guzzleResponse !== null) {
-                    $statusCode = $guzzleResponse->getStatusCode();
-                    $responseBody = (string) $guzzleResponse->getBody();
-                }
-            } catch (\Throwable $e) {
-                // Response unavailable
-            }
+                $response = $this->client->request($typeRequest, $method, $params);
+                break;
+            } catch (GuzzleException $exception) {
+                $lastException = $exception;
 
-            throw new RuntimeException(sprintf(
-                "API ERROR, Method: %s %s\nHTTP Status: %s\nParams: %s\nResponse: %s\nException: %s",
-                $typeRequest,
-                $method,
-                $statusCode,
-                json_encode($params, JSON_UNESCAPED_UNICODE),
-                $responseBody,
-                $exception->getMessage()
-            ), (int) $exception->getCode(), $exception);
+                if ($attempt < self::MAX_RETRIES) {
+                    continue;
+                }
+
+                $statusCode = 'N/A';
+                $responseBody = 'N/A';
+
+                try {
+                    $guzzleResponse = $exception->getResponse();
+                    if ($guzzleResponse !== null) {
+                        $statusCode = $guzzleResponse->getStatusCode();
+                        $responseBody = (string) $guzzleResponse->getBody();
+                    }
+                } catch (\Throwable $e) {
+                    // Response unavailable
+                }
+
+                throw new RuntimeException(sprintf(
+                    "API ERROR, Method: %s %s\nHTTP Status: %s\nParams: %s\nResponse: %s\nException: %s\nAttempts: %d",
+                    $typeRequest,
+                    $method,
+                    $statusCode,
+                    json_encode($params, JSON_UNESCAPED_UNICODE),
+                    $responseBody,
+                    $exception->getMessage(),
+                    $attempt
+                ), (int) $exception->getCode(), $exception);
+            }
         }
 
         if ($response->getStatusCode() != 200) {
